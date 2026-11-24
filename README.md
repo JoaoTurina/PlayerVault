@@ -1,5 +1,5 @@
 
-# PlayerVault — v1.1.1
+# PlayerVault — v1.3.1
 
 Perfil gamer universal, com biblioteca manual, conquistas e estatísticas. Interface responsiva em português, tema escuro e cor personalizável.
 
