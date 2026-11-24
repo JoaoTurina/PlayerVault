@@ -1,3 +1,72 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';
 test('fluxo completo: conta, perfil, jogos, conquistas, privacidade e exclusão',async()=>{const proc=spawn(process.execPath,['server.mjs'],{env:{...process.env,PORT:'0',DB_PATH:':memory:'},stdio:['ignore','pipe','pipe']});try{const port=await new Promise((resolve,reject)=>{proc.stdout.on('data',d=>{const m=String(d).match(/localhost:(\d+)/);if(m)resolve(m[1])});proc.on('exit',()=>reject(Error('Servidor encerrou')));proc.on('error',reject)});let cookie='';async function req(path,method='GET',body,auth=true){const r=await fetch(`http://127.0.0.1:${port}/api${path}`,{method,headers:{'Content-Type':'application/json',...(auth&&cookie?{cookie}:{})},...(body?{body:JSON.stringify(body)}:{})});if(r.headers.get('set-cookie')&&auth)cookie=r.headers.get('set-cookie').split(';')[0];return [r.status,await r.json()]}
-assert.equal((await req('/games'))[0],401);assert.equal((await req('/register','POST',{username:'player',password:'password123'}))[0],201);assert.equal((await req('/me'))[1].username,'player');assert.equal((await req('/games','POST',{name:'Minecraft',platform:'Computador',service:'Independente',minutes:120,status:'Jogando'}))[0],200);let g=(await req('/games'))[1][0];assert.equal(g.minutes,120);const icon='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';assert.equal(g.platform_icon,'');assert.equal((await req('/games/'+g.id,'PUT',{...g,platform_icon:icon,service_icon:icon}))[0],200);g=(await req('/games'))[1][0];assert.equal(g.platform_icon,icon);assert.equal(g.service_icon,icon);assert.equal((await req('/games/'+g.id,'PUT',{...g,service_icon:'javascript:alert(1)'}))[0],400);assert.equal((await req('/games/'+g.id,'PUT',{...g,service_icon:''}))[0],200);assert.equal((await req('/games'))[1][0].service_icon,'');assert.equal((await req(`/games/${g.id}/achievements`,'POST',{name:'Primeiro dia',unlocked:true,icon:'⭐'}))[0],200);assert.equal((await req('/profile/player','GET',undefined,false))[1].games[0].achievements[0].unlocked,1);assert.equal((await req('/profile','PUT',{display:'Player',private:true,color:'#abcdef'}))[0],200);assert.equal((await req('/profile/player','GET',undefined,false))[0],404);assert.equal((await req('/logout','POST'))[0],200);assert.equal((await req('/login','POST',{username:'player',password:'password123'}))[0],200);assert.equal((await req('/games/'+g.id,'DELETE'))[0],200);assert.deepEqual((await req('/games'))[1],[])}finally{proc.kill()}});
+assert.equal((await req('/games'))[0],401);assert.equal((await req('/register','POST',{username:'player',password:'password123'}))[0],201);assert.equal((await req('/me'))[1].username,'player');assert.equal((await req('/games','POST',{name:'Minecraft',platform:'Computador',service:'Independente',minutes:120,status:'Jogando'}))[0],200);let g=(await req('/games'))[1][0];assert.equal(g.minutes,120);const icon='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';assert.equal(g.platform_icon,'');assert.equal((await req('/games/'+g.id,'PUT',{...g,platform_icon:icon,service_icon:icon}))[0],200);g=(await req('/games'))[1][0];assert.equal(g.platform_icon,icon);assert.equal(g.service_icon,icon);assert.equal((await req('/games/'+g.id,'PUT',{...g,service_icon:'javascript:alert(1)'}))[0],400);assert.equal((await req('/games/'+g.id,'PUT',{...g,service_icon:''}))[0],200);assert.equal((await req('/games'))[1][0].service_icon,'');assert.equal((await req(`/games/${g.id}/achievements`,'POST',{name:'Primeiro dia',unlocked:true,icon:'⭐'}))[0],200);assert.equal((await req('/profile/player','GET',undefined,false))[1].games[0].achievements[0].unlocked,1);
+const achievementsPath = '/games/'+g.id+'/achievements';
+for (const achievement of [
+  {name:'Mais recente',unlocked:true,unlocked_date:'2024-03-01'},
+  {name:'Mais antiga',unlocked:true,unlocked_date:'2024-02-29'},
+  {name:'Bloqueada',unlocked:false,unlocked_date:'2024-01-01'}
+]) assert.equal((await req(achievementsPath,'POST',achievement))[0],200);
+assert.equal((await req(achievementsPath,'POST',{name:'Inválida',unlocked:true,unlocked_date:'2023-02-29'}))[0],400);
+let ordered = (await req('/games'))[1][0].achievements;
+assert.deepEqual(ordered.map(a=>a.name), ['Mais antiga','Mais recente','Primeiro dia','Bloqueada']);
+assert.equal((await req(achievementsPath+'/'+ordered[1].id,'PUT',{...ordered[1],unlocked_date:'2024-01-01'}))[0],200);
+ordered = (await req('/games'))[1][0].achievements;
+assert.equal(ordered[0].name,'Mais recente');
+assert.equal(ordered[0].unlocked_date,'2024-01-01');assert.equal((await req('/profile','PUT',{display:'Player',private:true,color:'#abcdef'}))[0],200);assert.equal((await req('/profile/player','GET',undefined,false))[0],404);assert.equal((await req('/logout','POST'))[0],200);
+assert.equal((await req('/register','POST',{username:'visitor',password:'password123'}))[0],201);
+assert.equal((await req('/profile/player'))[0],404);
+assert.equal((await req('/games/'+g.id,'PUT',g))[0],404);
+assert.equal((await req('/games/'+g.id,'DELETE'))[0],404);
+assert.equal((await req('/games/'+g.id+'/achievements','POST',{name:'Outro'}))[0],404);
+assert.equal((await req('/steam/import','POST',{appids:[11]}))[0],409);
+assert.equal((await req('/steam/preview','POST',{profile:'76561198000000000'},false))[0],401);assert.equal((await req('/login','POST',{username:'player',password:'password123'}))[0],200);
+const original = (await req('/games'))[1][0];
+const baseGame = '/games/'+original.id;
+assert.equal((await req(baseGame+'/details','PUT',{rating:11}))[0],400);
+assert.equal((await req(baseGame+'/details','PUT',{version_name:'Primeira jornada',game_description:'Meu texto',review:'Boa',rating:0}))[0],200);
+const [duplicateStatus, duplicate] = await req(baseGame+'/duplicate','POST',{version_name:'Desafio',copy_achievements:true});
+assert.equal(duplicateStatus,200);
+const [emptyStatus, empty] = await req(baseGame+'/duplicate','POST',{version_name:'Terceira'});
+assert.equal(emptyStatus,200);
+let library = (await req('/games'))[1];
+let originalVersion = library.find(game=>game.id===original.id);
+const copied = library.find(game=>game.id===duplicate.id);
+assert.equal(originalVersion.rating,0);
+assert.equal(originalVersion.review,'Boa');
+assert.equal(copied.version_group,originalVersion.version_group);
+assert.equal(copied.minutes,0);
+assert.equal(copied.achievements.length,originalVersion.achievements.length);
+assert.ok(copied.achievements.every(achievement=>!achievement.unlocked && !achievement.unlocked_date));
+assert.equal(library.find(game=>game.id===empty.id).achievements.length,0);
+const route = baseGame+'/achievements';
+assert.equal((await req(route,'POST',{name:'Inválida',game_ids:[original.id,999999]}))[0],400);
+assert.equal((await req(route,'POST',{name:'Compartilhada',game_ids:[original.id,duplicate.id]}))[0],200);
+library = (await req('/games'))[1];
+const achievement = library.find(game=>game.id===duplicate.id).achievements.find(item=>item.name==='Compartilhada');
+const unlockPath = '/games/'+duplicate.id+'/achievements/'+achievement.id;
+assert.equal((await req(unlockPath,'PUT',{...achievement,unlocked:true,unlocked_date:'2026-11-24'}))[0],200);
+library = (await req('/games'))[1];
+assert.equal(library.find(game=>game.id===duplicate.id).achievements.find(item=>item.id===achievement.id).unlocked_date,'2026-11-24');
+assert.equal(library.find(game=>game.id===original.id).achievements.find(item=>item.name==='Compartilhada').unlocked,0);
+assert.equal(library.find(game=>game.id===empty.id).achievements.length,0);
+assert.equal((await req(baseGame+'/screenshots','POST',{caption:'Uma cena',image:icon}))[0],200);
+const [,shots] = await req(baseGame+'/screenshots');
+assert.equal(shots[0].caption,'Uma cena');
+assert.equal((await req('/games/'+duplicate.id+'/screenshots'))[1].length,0);
+assert.equal((await req(baseGame+'/screenshots','GET',undefined,false))[0],404);
+assert.equal((await req('/login','POST',{username:'visitor',password:'password123'}))[0],200);
+assert.equal((await req(baseGame+'/duplicate','POST',{version_name:'Outra'}))[0],404);
+assert.equal((await req(baseGame+'/details','PUT',{rating:4}))[0],404);
+assert.equal((await req(baseGame+'/screenshots','POST',{image:icon}))[0],404);
+assert.equal((await req(baseGame+'/screenshots/'+shots[0].id,'DELETE'))[0],404);
+assert.equal((await req('/login','POST',{username:'player',password:'password123'}))[0],200);
+assert.equal((await req(baseGame+'/screenshots/'+shots[0].id,'DELETE'))[0],200);
+assert.equal((await req(baseGame+'/screenshots','POST',{image:icon}))[0],200);
+assert.equal((await req(baseGame,'DELETE'))[0],200);
+assert.equal((await req(baseGame+'/screenshots'))[0],404);
+assert.equal((await req('/games'))[1].length,2);
+assert.equal((await req('/games/'+duplicate.id,'DELETE'))[0],200);
+assert.equal((await req('/games/'+empty.id,'DELETE'))[0],200);
+
+assert.deepEqual((await req('/games'))[1],[])}finally{proc.kill()}});

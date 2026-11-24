@@ -16,6 +16,13 @@ Aplicação web para reunir a trajetória gamer do usuário em um perfil visual,
 | RF08 | Recorte de avatar, banner, capa, conquista e ícones: zoom 1–4x, arraste, posição, prévia, centralização e recorte da imagem atual. |
 | RF09 | Cabeçalho com nome, avatar e biografia inteiramente abaixo do banner. |
 
+| RF10 | Importação manual da biblioteca Steam visível, com seleção de todos ou de jogos específicos, preservação de edições locais e identificação das conquistas importadas. |
+| RF11 | Página própria de conquistas por jogo, com a mesma visibilidade do perfil e edição para o dono. |
+
+| RF12 | Capas Steam na importação e na biblioteca, imagens oficiais de conquistas quando disponíveis e data de aquisição editável. Desbloqueadas aparecem primeiro, da data mais antiga para a mais recente, seguidas pelas desbloqueadas sem data e pelas bloqueadas. |
+
+| RF13 | Detalhes de jogo em três abas, descrição, análise, nota, versões independentes e capturas. O dono pode duplicar versões, escolher a quais versões adicionar uma conquista e excluir versões. |
+
 ## Regras de negócio atuais
 - Um registro corresponde a um jogo em uma plataforma; total de jogos únicos usa nome normalizado. Contagem por plataforma usa registros, não necessariamente jogos únicos. Tempo total soma minutos de todos os registros.
 - Percentual global = conquistas desbloqueadas / conquistas cadastradas × 100. Jogos sem conquistas não entram no denominador. Sem conquistas cadastradas, mostrar traço, não 0%.

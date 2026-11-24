@@ -9,7 +9,7 @@ Versões futuras são propostas, não compromissos de prazo. Priorizar a solicit
 | 1.1.1 | Documentação para Codex e continuidade | Atual |
 | 1.2 | Vitrines, temas, organização do perfil e refinamento visual | Proposto |
 | 1.3 | Catálogo de jogos e importação de capas/metadados | Proposto |
-| 2.0 | Steam: importação de biblioteca, tempo e conquistas disponíveis | Proposto |
+| 2.0 | Steam: importação de biblioteca, tempo e conquistas disponíveis | Importação manual implementada |
 | 2.1 | Outras plataformas conforme APIs e permissões | Proposto |
 | 3.0 | Agente desktop opt-in para sessões de jogo | Proposto |
 | 4.0 | Amigos, comparação e atividades sociais | Proposto |

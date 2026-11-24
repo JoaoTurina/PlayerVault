@@ -1,5 +1,14 @@
 # Changelog
 
+## Em desenvolvimento
+
+- Detalhes por jogo com descrição, análise, nota, versões independentes e capturas. Desbloquear registra a data local de hoje.
+
+- Capas Steam na consulta e na biblioteca, imagens de conquistas e datas editáveis, com ordenação cronológica das conquistas desbloqueadas.
+
+- Importação opcional da biblioteca e conquistas Steam, com seleção individual ou em massa e preservação das edições locais.
+- Página de conquistas por jogo com indicação da origem Steam.
+
 ## 1.1.1
 - Renomeia o projeto para PlayerVault na interface, pacote e documentação; mantém o nome interno do banco para compatibilidade.
 - Adiciona AGENTS.md, REQUIREMENTS.md, ARCHITECTURE.md, ROADMAP.md e CODEX-QUICKSTART.md.

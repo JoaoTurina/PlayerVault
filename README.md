@@ -45,7 +45,19 @@ Execute `npm test` em outro terminal ou com o servidor parado. Os testes iniciam
 
 Esta é uma versão local de desenvolvimento, não uma implantação de produção. Antes de expor à internet, implementar HTTPS (com `SECURE_COOKIE=1`), limitação de tentativas de login, validação de conteúdo real de imagens, quotas, paginação, recuperação de senha, logs e backups. O servidor escuta apenas 127.0.0.1 por padrão. `HOST`, `PORT` e `DB_PATH` podem ser configurados por variáveis de ambiente.
 
-Futuro: catálogo normalizado, integrações Steam conforme permissões, importação de capas, agente desktop autorizado para medir sessões, vitrines reorganizáveis e temas avançados. Nenhum monitoramento de executáveis ou integração externa ocorre nesta versão.
+Futuro: catálogo normalizado, importação de capas, agente desktop autorizado para medir sessões, vitrines reorganizáveis e temas avançados.
+
+## Detalhes do jogo
+
+Cada jogo tem uma visão geral com descrição, análise, nota de 0 a 10 e nome da versão, além das abas Conquistas e Capturas. O dono pode duplicar uma versão, copiar a lista de conquistas como bloqueada e excluir versões individualmente. Ao criar uma conquista, é possível escolher as versões que receberão uma cópia independente. O botão **Desbloquear** preenche a data local de hoje, que pode ser alterada depois. Capturas são recortadas em 16:9 e aparecem conforme a visibilidade do perfil.
+
+## Importação da Steam
+
+Obtenha uma [chave da Steam Web API](https://steamcommunity.com/dev/apikey) para esta instalação e configure `STEAM_API_KEY` no ambiente do servidor antes de executar `npm start`. Mantenha a chave fora do Git e do navegador. Consulte os [termos da Valve](https://steamcommunity.com/dev/apiterms). A consulta é para o perfil Steam do próprio usuário, mediante confirmação, e depende de detalhes de jogos e conquistas visíveis para a API.
+
+No perfil PlayerVault, abra **Importar da Steam**, informe o SteamID64 ou o link da Comunidade Steam e consulte a biblioteca. Use **Adicionar todos** ou marque os jogos para **Adicionar somente os que eu escolher**. São gravados jogos, tempo, conquistas retornadas e identificadores de origem no SQLite local. Os dados seguem a visibilidade do perfil PlayerVault. A página **Conquistas** de cada jogo indica quais vieram da Steam. A prévia e a biblioteca mostram a capa da Steam quando disponível. As conquistas importam a imagem e a data quando fornecidas pela Steam. Imagens personalizadas ganham prioridade. Para preencher imagens e datas de jogos já importados, consulte o mesmo perfil novamente e selecione os jogos marcados para atualização. Na página de conquistas, as desbloqueadas aparecem primeiro, da data mais antiga para a mais recente. As desbloqueadas sem data ficam no fim desse grupo. A data é opcional e editável.
+
+A importação é manual. Um AppID já importado na sua conta não é duplicado nem atualizado, e registros manuais são preservados, mesmo se tiverem o mesmo nome. Jogos cujas conquistas estiverem indisponíveis podem ser consultados novamente na importação. Jogos com conquistas indisponíveis ou sem suporte pela Steam podem aparecer sem conquistas. Os dados Steam são fornecidos como estão, sem garantias.
 
 ## Atualização 1.1.0
 
