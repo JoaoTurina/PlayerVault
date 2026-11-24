@@ -1,4 +1,4 @@
-# Gamefolio — MVP 1.0
+# Gamefolio — MVP 1.1.0
 
 Perfil gamer universal, com biblioteca manual, conquistas e estatísticas. Interface responsiva em português, tema escuro e cor personalizável.
 
