@@ -1,16 +1,16 @@
-# Gamefolio — MVP 1.0
+# PlayerVault — v1.1.1
 
 Perfil gamer universal, com biblioteca manual, conquistas e estatísticas. Interface responsiva em português, tema escuro e cor personalizável.
 
 ## Executar no Windows, Linux ou macOS
 
 1. Instale Node.js 22.13 ou superior (preferencialmente uma versão LTS atual).
-2. Extraia o ZIP e abra a pasta `gamefolio` no VS Code.
+2. Extraia o ZIP e abra a pasta `playervault` no VS Code.
 3. No terminal, execute `npm start`.
 4. Acesse http://localhost:3000 e crie uma conta.
 
 Não é necessário `npm install`: o projeto usa apenas módulos nativos do Node, incluindo `node:sqlite`. Em algumas versões do Node aparece um aviso de recurso experimental do SQLite; isso não impede o funcionamento.
-O banco é criado automaticamente em `data/gamefolio.sqlite`. Para fazer backup, pare o servidor e copie a pasta data. Para parar, pressione Ctrl+C.
+O banco é criado automaticamente em `data/gamefolio.sqlite`. O nome interno do banco foi mantido para preservar a compatibilidade com instalações anteriores do PlayerVault (antigo nome do projeto: Gamefolio). Para fazer backup, pare o servidor e copie a pasta data. Para parar, pressione Ctrl+C.
 
 ## Recursos
 
@@ -63,3 +63,7 @@ Futuro: catálogo normalizado, integrações Steam conforme permissões, importa
 ### Validação
 
 `npm test` cobre o fluxo anterior e a persistência/remoção/validação dos ícones personalizados. O teste de sintaxe do frontend também foi executado. O teste interativo do navegador não pôde ser concluído neste ambiente devido ao bloqueio de navegação local do Chromium; valide o recorte e a apresentação visual localmente.
+
+## Desenvolvimento com Codex
+
+Abra esta pasta no VS Code e use a extensão oficial Codex (OpenAI). O arquivo `AGENTS.md` contém as instruções do agente; consulte também `REQUIREMENTS.md`, `ROADMAP.md`, `ARCHITECTURE.md` e `CHANGELOG.md`. Veja `CODEX-QUICKSTART.md` para o primeiro prompt e fluxo Git. A versão 1.1.1 altera somente a documentação e a versão do pacote.
